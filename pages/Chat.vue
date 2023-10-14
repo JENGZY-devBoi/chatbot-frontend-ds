@@ -38,7 +38,7 @@
                         </div>
 
                         <div 
-                            v-if="chats?.at(idx-1)?.author !== item.author"
+                            v-if="chats?.at(idx-1)?.author !== item.author && idx !== 0"
                             class="text-author text-xs mb-1"
                             :class="{
                                 'text-chat-other-color text-start pl-1': item.author !== storeAuthor.authorName,
