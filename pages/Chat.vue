@@ -7,6 +7,7 @@
 
             <ul 
                 class="flex flex-col flex-grow mb-2 px-3 pt-3 overflow-y-auto"
+                ref="elScroll"
             >
                 <li 
                     v-for="item,idx of chats"
@@ -81,24 +82,40 @@
 </template>
 
 <script setup>
+    import { io } from 'socket.io-client';
     import dayjs from 'dayjs';
     import useAuthorStore from '@/stores/author';
     const storeAuthor = useAuthorStore();
 
     const chats = ref([]);
 
-    onMounted(() => {
-        socket.on('connect', () => {
-            console.log('connect socket success');
-        })
-    })
-    
+    const messageSend = ref('');
+    const elScroll = ref();
+
+    const socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
+        {
+            transports: ["websocket", "polling"]
+        }
+    );
+
     socket.on('new-message', (chat) => {
-        console.log(chat)
         chats.value.push(chat);
+
+        nextTick(() => {
+            const lastChild = elScroll.value?.lastElementChild;
+
+            lastChild?.scrollIntoView({
+                block: 'end',
+                behavior: 'smooth'
+            });
+        });
     });
 
-    const messageSend = ref('');
+    onMounted(() => {
+        if (storeAuthor.authorName === '') {
+            navigateTo('/');
+        }
+    })
 
     const onSubmitSendMessage = () => {
         if (messageSend.value === '') {
@@ -109,7 +126,7 @@
             author: storeAuthor.authorName,
             msg: messageSend.value
         });
-        
+
         messageSend.value = '';
     }
 </script>
