@@ -1,5 +1,5 @@
 <template>
-    <main class="w-full md:h-screen sm:h-[100svh] bg-grey-200  lg:bg-grey-200">
+    <main class="w-full h-screen bg-grey-200  lg:bg-grey-200">
         <section class="md:w-[500px] w-full md:mx-auto mx-0 h-full rounded-md flex flex-col bg-secondary">
             <h1 class="bg-primary p-2 text-xl font-bold text-brown">
                 Chat room
