@@ -1,6 +1,6 @@
 <template>
     <main class="w-full h-screen bg-grey-200  lg:bg-grey-200">
-        <section class="md:w-[500px] w-full md:mx-auto mx-0 h-screen  rounded-md flex flex-col bg-secondary">
+        <section class="md:w-[500px] w-full md:mx-auto mx-0 h-full rounded-md flex flex-col bg-secondary">
             <h1 class="bg-primary p-2 text-xl font-bold text-brown">
                 Chat room
             </h1>
@@ -61,7 +61,7 @@
                 </li>
             </ul>
 
-            <form @submit.prevent="onSubmitSendMessage" class="flex p-5 bg-[#D4C8BE] gap-2 pb-8">
+            <form @submit.prevent="onSubmitSendMessage" class="flex p-5 bg-[#D4C8BE] gap-2">
                 <input 
                     v-model="messageSend"
                     class="py-2 px-3 focus:ring-0 focus:outline-0 rounded-xl w-full" 
