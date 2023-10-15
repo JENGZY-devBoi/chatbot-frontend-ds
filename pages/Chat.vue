@@ -109,18 +109,24 @@
 
     onMounted(() => {
         socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
+        // socket = io('http://localhost:8080', 
             {
                 transports: ["websocket", "polling"],
                 auth: {
-                    name: storeAuthor.authorName
+                    name: storeAuthor.authorName,
+                    room: 'room1'
                 }
             }
         );
 
+        
         if (storeAuthor.authorName === '') {
             socket.disconnect();
             return navigateTo('/');
         }
+
+        socket.emit('room', 'room1');
+    
 
         socket.on('new-message', (chat) => {
             chats.value.push(chat);
@@ -141,7 +147,8 @@
             toast.success(`${data.userConnect?.split('USER')[0]} has joined`, {
                 autoClose: 1500,
                 position: 'top-center',
-                theme: 'colored'
+                theme: 'colored',
+                
             })
         })
 
