@@ -101,25 +101,23 @@
 
     const storeAuthor = useAuthorStore();
 
-    let socket;
     const chats = ref([]);
     const members = ref(0);
     const messageSend = ref('');
     const elScroll = ref();
 
-    onMounted(() => {
-        socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
-        // socket = io('http://localhost:8080', 
-            {
-                transports: ['websocket', 'polling'],
-                auth: {
-                    name: storeAuthor.authorName,
-                    room: 'room1'
-                },
+    const socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
+    // socket = io('http://localhost:8080', 
+        {
+            transports: ['websocket', 'polling'],
+            auth: {
+                name: storeAuthor.authorName,
+                room: 'room1'
             },
-        );
+        },
+    );
 
-        
+    onMounted(() => {
         if (storeAuthor.authorName === '') {
             socket.disconnect();
             return navigateTo('/');

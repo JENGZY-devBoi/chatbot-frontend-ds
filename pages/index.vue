@@ -23,17 +23,6 @@ definePageMeta({
 
 import { io } from 'socket.io-client';
 
-onMounted(() => {
-  io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/',
-    {
-      transports: ['websocket', 'polling'],
-      auth: {
-        room: 'room1'
-      },
-    },
-  );
-})
-
 const onSubmitAuthor = () => {
   if (author.value == '') {
     return;
