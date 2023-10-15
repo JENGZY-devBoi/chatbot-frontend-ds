@@ -6,10 +6,10 @@
                     Chat room 
                 </h1>
 
-                <!-- <span class="text-[12px] font-normal flex gap-x-1 items-center text-brown text-opacity-80">
+                <span class="text-[12px] font-normal flex gap-x-1 items-center text-brown text-opacity-80">
                     <Icon name="ion:radio-button-on-outline" class="text-[#26cc00] text-[9px]" /> 
                     {{ members }} online
-                </span> -->
+                </span>
             </div>
 
             <ul 
@@ -110,9 +110,13 @@
     onMounted(() => {
         socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
         // socket = io('http://localhost:8080', 
-            // {
-            //     transports: ['websocket'],
-            // }
+            {
+                // transports: ['websocket', 'polling'],
+                auth: {
+                    name: storeAuthor.authorName,
+                    room: 'room1'
+                }
+            }
         );
 
         
@@ -134,20 +138,20 @@
             });
         });
 
-        // socket.on('user-connect', (data) => {
-        //     members.value = data.users;
+        socket.on('user-connect', (data) => {
+            members.value = data.users;
 
-        //     toast.success(`${data.userConnect?.split('USER')[0]} has joined`, {
-        //         autoClose: 1500,
-        //         position: 'top-center',
-        //         theme: 'colored',
+            toast.success(`${data.userConnect?.split('USER')[0]} has joined`, {
+                autoClose: 1500,
+                position: 'top-center',
+                theme: 'colored',
                 
-        //     })
-        // })
+            })
+        })
 
-        // socket.on('user-disconnect', (data) => {
-        //     members.value = data.users;
-        // })
+        socket.on('user-disconnect', (data) => {
+            members.value = data.users;
+        })
     })
 
     onUnmounted(() => {
