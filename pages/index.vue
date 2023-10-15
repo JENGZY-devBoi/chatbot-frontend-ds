@@ -21,12 +21,17 @@
 
   const author = ref('');
 
+  definePageMeta({
+    middleware: ['auth']
+  })
+
   const onSubmitAuthor = () => {
     if (author.value == '') {
       return;
     }
 
-    storeAuthor.authorName = author.value;
+    const rd = Math.random();
+    storeAuthor.authorName = author.value + 'USER' + rd;
 
     console.log(storeAuthor.authorName);
     author.value = '';

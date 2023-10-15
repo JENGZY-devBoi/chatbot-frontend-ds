@@ -1,9 +1,16 @@
 <template>
-    <main class="w-full h-screen bg-grey-200  lg:bg-grey-200">
-        <section class="md:w-[500px] w-full md:mx-auto mx-0 h-full rounded-md flex flex-col bg-secondary">
-            <h1 class="bg-primary p-2 text-xl font-bold text-brown">
-                Chat room
-            </h1>
+    <main class="w-full h-screen bg-grey-200  lg:bg-grey-200 grid place-content-center">
+        <section class="md:w-[500px] w-full flex flex-col bg-secondary h-[400px]">
+            <div class="flex items-center gap-x-3 w-full bg-primary justify-between p-2 px-4 rounded-t-xl ">
+                <h1 class="text-xl font-bold text-brown">
+                    Chat room 
+                </h1>
+
+                <span class="text-[12px] font-normal flex gap-x-1 items-center text-brown text-opacity-80">
+                    <Icon name="ion:radio-button-on-outline" class="text-[#26cc00] text-[9px]" /> 
+                    {{ members }} online
+                </span>
+            </div>
 
             <ul 
                 class="flex flex-col flex-grow mb-2 px-3 pt-3 overflow-y-auto"
@@ -34,7 +41,7 @@
                                 'text-chat-owner-color text-end pr-1': item.author === storeAuthor.authorName
                             }"
                         >
-                            {{ item.author }}
+                            {{ item.author?.split('USER')[0] }}
                         </div>
 
                         <div 
@@ -45,7 +52,7 @@
                                 'text-chat-owner-color text-end pr-1': item.author === storeAuthor.authorName
                             }"
                         >
-                            {{ item.author }}
+                            {{ item.author?.split('USER')[0] }}
                         </div>
             
                         <div 
@@ -61,7 +68,7 @@
                 </li>
             </ul>
 
-            <form @submit.prevent="onSubmitSendMessage" class="flex p-5 bg-[#D4C8BE] gap-2">
+            <form @submit.prevent="onSubmitSendMessage" class="flex p-5 bg-[#D4C8BE] gap-2 rounded-b-xl">
                 <input 
                     v-model="messageSend"
                     class="py-2 px-3 focus:ring-0 focus:outline-0 rounded-xl w-full" 
@@ -85,44 +92,74 @@
     import { io } from 'socket.io-client';
     import dayjs from 'dayjs';
     import useAuthorStore from '@/stores/author';
+
+    import { toast } from 'vue3-toastify';
+
+    definePageMeta({
+        middleware: ['auth']
+    })
+
     const storeAuthor = useAuthorStore();
 
+    let socket;
     const chats = ref([]);
-
+    const members = ref(0);
     const messageSend = ref('');
     const elScroll = ref();
 
-    const socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
-        {
-            transports: ["websocket", "polling"]
+    onMounted(() => {
+        socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
+            {
+                transports: ["websocket", "polling"],
+                auth: {
+                    name: storeAuthor.authorName
+                }
+            }
+        );
+
+        if (storeAuthor.authorName === '') {
+            socket.disconnect();
+            return navigateTo('/');
         }
-    );
 
-    socket.on('new-message', (chat) => {
-        chats.value.push(chat);
+        socket.on('new-message', (chat) => {
+            chats.value.push(chat);
 
-        nextTick(() => {
-            const lastChild = elScroll.value?.lastElementChild;
+            nextTick(() => {
+                const lastChild = elScroll.value?.lastElementChild;
 
-            lastChild?.scrollIntoView({
-                block: 'end',
-                behavior: 'smooth'
+                lastChild?.scrollIntoView({
+                    block: 'end',
+                    behavior: 'smooth'
+                });
             });
         });
-    });
 
-    onMounted(() => {
-        if (storeAuthor.authorName === '') {
-            navigateTo('/');
-        }
+        socket.on('user-connect', (data) => {
+            members.value = data.users;
+
+            toast.success(`${data.userConnect?.split('USER')[0]} has joined`, {
+                autoClose: 1500,
+                position: 'top-center',
+                theme: 'colored'
+            })
+        })
+
+        socket.on('user-disconnect', (data) => {
+            members.value = data.users;
+        })
+    })
+
+    onUnmounted(() => {
+        socket.disconnect();
     })
 
     const onSubmitSendMessage = () => {
         if (messageSend.value === '') {
             return console.log('cannot send');
-        }
+        } 
 
-        socket.emit('send-message', {
+        socket?.emit('send-message', {
             author: storeAuthor.authorName,
             msg: messageSend.value
         });
