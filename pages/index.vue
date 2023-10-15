@@ -24,7 +24,7 @@ definePageMeta({
 import { io } from 'socket.io-client';
 
 onMounted(() => {
-  socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/',
+  io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/',
     {
       transports: ['websocket', 'polling'],
       auth: {
