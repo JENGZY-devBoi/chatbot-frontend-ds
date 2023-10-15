@@ -111,7 +111,7 @@
         socket = io('https://chatbot-backend-applicaiton-fwfeo.ondigitalocean.app/', 
         // socket = io('http://localhost:8080', 
             {
-                transports: ['polling'],
+                transports: ['websocket', 'polling', 'webtransport'],
                 auth: {
                     name: storeAuthor.authorName,
                     room: 'room1'
